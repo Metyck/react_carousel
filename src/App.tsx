@@ -6,7 +6,7 @@ interface State {
   images: string[];
 }
 
-class App extends React.Component<{}, State> {
+export class App extends React.Component<{}, State> {
   state = {
     images: [
       './img/1.png',
@@ -36,10 +36,11 @@ class App extends React.Component<{}, State> {
           frameSize={3}
           itemWidth={130}
           animationDuration={1000}
+          infinite={true}
         />
       </div>
     );
   }
 }
 
-export default App;
+// export default App;

@@ -7,28 +7,34 @@ type CarouselType = {
   frameSize: number;
   itemWidth: number;
   animationDuration: number;
+  infinite: boolean;
 };
 
 const Carousel: React.FC = ({
   images,
-  step,
-  frameSize,
-  itemWidth,
-  animationDuration,
+  step = 3,
+  frameSize = 3,
+  itemWidth = 130,
+  animationDuration = 1000,
+  infinite = false,
 }: CarouselType) => {
-  const [currItemWidth, setItemWidth] = useState<number>(itemWidth);
-  const [currStep, setStep] = useState<number>(step * currItemWidth);
-  const [currX, setCurrX] = useState<number>(-40);
+  const initialImages = images;
+  const [currImages, setImages] = useState(images);
+  const [currItemWidth, setItemWidth] = useState(itemWidth);
+  const [currStep, setStep] = useState(step * currItemWidth);
+  const [currX, setCurrX] = useState(-40);
   const [currMoves, setCurrMoves] = useState<number>(0);
-  const [currFrameSize, setFrameSize] = useState<number>(frameSize);
+  const [currFrameSize, setFrameSize] = useState(frameSize);
   const [currFrameSizePx, setFrameSizePx] = useState(
     currFrameSize * currItemWidth - 40,
   );
   const [currAnimationDuration, setAnimationDuration] =
     useState(animationDuration);
   const [lastMove, setLastMove] = useState(
-    Math.floor((images.length - 1) / step),
+    Math.floor((currImages.length - 1) / step),
   );
+
+  let currKey = 0;
 
   function frameSizeSetter(
     size: number,
@@ -41,7 +47,7 @@ const Carousel: React.FC = ({
   }
 
   function stepSetter(size: number, actualItemWidth: number = currItemWidth) {
-    const newLastMove = Math.floor((images.length - 1) / size);
+    const newLastMove = Math.floor((currImages.length - 1) / size);
 
     setStep(size * actualItemWidth);
     setLastMove(newLastMove);
@@ -121,23 +127,28 @@ const Carousel: React.FC = ({
         className="Carousel__list"
         style={{ width: `${currFrameSizePx}px`, height: `${currItemWidth}px` }}
       >
-        {images.map(image => (
-          <li
-            className="image-wrapper"
-            key={image.replace(/\D/g, '')}
-            style={{
-              width: `${currItemWidth}px`,
-              transform: `translateX(${currX}px)`,
-              transition: `transform ${currAnimationDuration}ms`,
-            }}
-          >
-            <img src={image} alt={image.replace(/\D/g, '')} className="image" />
-          </li>
-        ))}
+        {currImages.map(image => {
+          currKey++;
+
+          return (
+            <li
+              className="image-wrapper"
+              key={`image-${currKey}`}
+              style={{
+                width: `${currItemWidth}px`,
+                transform: `translateX(${currX}px)`,
+                transition: `transform ${currAnimationDuration}ms`,
+              }}
+            >
+              <img src={image} alt={`image-${currKey}`} className="image" />
+            </li>
+          );
+        })}
       </ul>
 
       <button
-        disabled={currMoves === 0}
+        disabled={currMoves <= 0}
+        data-cy="prev"
         type="button"
         onClick={() => {
           setCurrX(currX + currStep);
@@ -147,11 +158,16 @@ const Carousel: React.FC = ({
         Prev
       </button>
       <button
-        disabled={currMoves >= lastMove}
+        disabled={!infinite ? currMoves >= lastMove : false}
+        data-cy="next"
         type="button"
         onClick={() => {
           setCurrX(currX + currStep * -1);
           setCurrMoves(currMoves + 1);
+
+          if (infinite && currMoves >= lastMove - 1) {
+            setImages([...currImages, ...initialImages]);
+          }
         }}
       >
         Next
