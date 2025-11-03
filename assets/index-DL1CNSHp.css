@@ -1,0 +1,1 @@
+.Carousel{width:1300px}.Carousel__inputs{display:flex;gap:10px}.Carousel__input{border:1px black solid;border-radius:4px;max-width:70px}.Carousel__input:hover{box-shadow:2px 2px gray}.Carousel__list{overflow:hidden;display:flex;flex-direction:row}.image,.image-wrapper{height:100%}button:hover{cursor:pointer}
