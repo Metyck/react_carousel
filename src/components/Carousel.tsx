@@ -34,7 +34,7 @@ const Carousel: React.FC = ({
     Math.floor((currImages.length - 1) / step),
   );
 
-  let currKey = 0;
+  let gensCount = 0;
 
   function frameSizeSetter(
     size: number,
@@ -66,9 +66,11 @@ const Carousel: React.FC = ({
   return (
     <div className="Carousel">
       <div className="Carousel__inputs">
+        <label htmlFor="itemWidth">Item Width:</label>
         <input
           type="number"
           className="Carousel__input"
+          id="itemWidth"
           onChange={ev => {
             const val = ev.target.value;
 
@@ -80,9 +82,11 @@ const Carousel: React.FC = ({
           }}
         />
 
+        <label htmlFor="frameWidth">Frame Width:</label>
         <input
           type="number"
           className="Carousel__input"
+          id="frameWidth"
           onChange={ev => {
             const val = ev.target.value;
 
@@ -94,9 +98,11 @@ const Carousel: React.FC = ({
           }}
         />
 
+        <label htmlFor="step">Step:</label>
         <input
           type="number"
           className="Carousel__input"
+          id="step"
           onChange={ev => {
             const val = ev.target.value;
 
@@ -108,9 +114,11 @@ const Carousel: React.FC = ({
           }}
         />
 
+        <label htmlFor="animationDur">Animation Duration:</label>
         <input
           type="number"
           className="Carousel__input"
+          id="animationDur"
           onChange={ev => {
             const val = ev.target.value;
 
@@ -128,19 +136,25 @@ const Carousel: React.FC = ({
         style={{ width: `${currFrameSizePx}px`, height: `${currItemWidth}px` }}
       >
         {currImages.map(image => {
-          currKey++;
+          const lastItem = initialImages[initialImages.length - 1];
+          const origIndex = image.replace(/\D/g, '');
 
           return (
             <li
               className="image-wrapper"
-              key={`image-${currKey}`}
+              key={
+                gensCount >= 0
+                  ? `orig-${origIndex}::clone-${gensCount}`
+                  : `orig-${origIndex}`
+              }
               style={{
                 width: `${currItemWidth}px`,
                 transform: `translateX(${currX}px)`,
                 transition: `transform ${currAnimationDuration}ms`,
               }}
             >
-              <img src={image} alt={`image-${currKey}`} className="image" />
+              <img src={image} alt={image} className="image" />
+              {image === lastItem && gensCount++}
             </li>
           );
         })}
